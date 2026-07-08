@@ -251,7 +251,7 @@ origin_df = (
 fig = px.bar(
     origin_df,
     x="QUANTITY(MT)",
-    y="ORIGIN",
+    y="Origin",
     orientation="h",
     title="Top Origin Countries"
 )
