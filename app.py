@@ -48,7 +48,7 @@ importer = st.sidebar.multiselect(
 
 origin = st.sidebar.multiselect(
     "Origin",
-    sorted(df["ORIGIN"].unique())
+    sorted(df["Origin"].unique())
 )
 
 fert_type = st.sidebar.multiselect(
@@ -71,7 +71,7 @@ if importer:
     filtered = filtered[filtered["Importer"].isin(importer)]
 
 if origin:
-    filtered = filtered[filtered["ORIGIN"].isin(origin)]
+    filtered = filtered[filtered["Origin"].isin(origin)]
 
 if fert_type:
     filtered = filtered[filtered["Type"].isin(fert_type)]
@@ -89,7 +89,7 @@ avg_price = total_value / total_volume if total_volume > 0 else 0
 
 num_importers = filtered["Importer"].nunique()
 
-num_origin = filtered["ORIGIN"].nunique()
+num_origin = filtered["Origin"].nunique()
 
 num_formula = filtered["FORMULA"].nunique()
 
