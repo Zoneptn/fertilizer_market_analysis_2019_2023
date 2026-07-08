@@ -208,6 +208,7 @@ fig = px.bar(
 )
 
 fig.update_layout(yaxis=dict(categoryorder="total ascending"))
+fig.update_yaxes(type="category")
 
 st.plotly_chart(fig, use_container_width=True)
 
@@ -241,7 +242,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 origin_df = (
     filtered
-    .groupby("ORIGIN", as_index=False)["QUANTITY(MT)"]
+    .groupby("Origin", as_index=False)["QUANTITY(MT)"]
     .sum()
     .sort_values("QUANTITY(MT)", ascending=False)
     .head(10)
