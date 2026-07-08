@@ -1,0 +1,312 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+
+st.set_page_config(
+    page_title="Thailand Fertilizer Import Dashboard",
+    layout="wide"
+)
+
+st.title("Thailand Fertilizer Import Dashboard")
+st.caption("Overview of Fertilizer Imports (2019–2023)")
+
+df = pd.read_excel("fertilizer_import_2019_2023_cleaned.xlsx")
+
+
+#==========================
+# Clean data
+#==========================
+df.columns = df.columns.str.strip()
+
+df["QUANTITY(MT)"] = pd.to_numeric(df["QUANTITY(MT)"], errors="coerce")
+df["VALUE CIF(BAHT)"] = pd.to_numeric(df["VALUE CIF(BAHT)"], errors="coerce")
+df["Avg Bht/MT"] = pd.to_numeric(df["Avg Bht/MT"], errors="coerce")
+
+df = df.dropna(subset=["QUANTITY(MT)", "VALUE CIF(BAHT)"])
+
+#==========================
+# Side bar
+#==========================
+st.sidebar.header("Filters")
+
+year = st.sidebar.multiselect(
+    "Year",
+    sorted(df["Year"].unique()),
+    default=sorted(df["Year"].unique())
+)
+
+formula = st.sidebar.multiselect(
+    "Formula",
+    sorted(df["FORMULA"].unique())
+)
+
+importer = st.sidebar.multiselect(
+    "Importer",
+    sorted(df["Importer"].unique())
+)
+
+origin = st.sidebar.multiselect(
+    "Origin",
+    sorted(df["ORIGIN"].unique())
+)
+
+fert_type = st.sidebar.multiselect(
+    "Type",
+    sorted(df["Type"].dropna().unique())
+)
+
+#==========================
+# Apply filters
+#==========================
+filtered = df.copy()
+
+if year:
+    filtered = filtered[filtered["Year"].isin(year)]
+
+if formula:
+    filtered = filtered[filtered["FORMULA"].isin(formula)]
+
+if importer:
+    filtered = filtered[filtered["Importer"].isin(importer)]
+
+if origin:
+    filtered = filtered[filtered["ORIGIN"].isin(origin)]
+
+if fert_type:
+    filtered = filtered[filtered["Type"].isin(fert_type)]
+    
+
+
+#==========================
+# KPI calculation
+#==========================
+total_volume = filtered["QUANTITY(MT)"].sum()
+
+total_value = filtered["VALUE CIF(BAHT)"].sum()
+
+avg_price = total_value / total_volume if total_volume > 0 else 0
+
+num_importers = filtered["Importer"].nunique()
+
+num_origin = filtered["ORIGIN"].nunique()
+
+num_formula = filtered["FORMULA"].nunique()
+
+
+#==========================
+# KPI cards
+#==========================
+st.subheader("Overview")
+
+c1, c2, c3, c4, c5, c6 = st.columns(6)
+
+c1.metric(
+    "Import Volume",
+    f"{total_volume:,.0f} MT"
+)
+
+c2.metric(
+    "Import Value",
+    f"{total_value/1e9:,.2f} B THB"
+)
+
+c3.metric(
+    "Avg Price",
+    f"{avg_price:,.0f} THB/MT"
+)
+
+c4.metric(
+    "Importers",
+    num_importers
+)
+
+c5.metric(
+    "Origins",
+    num_origin
+)
+
+c6.metric(
+    "Formulas",
+    num_formula
+)
+
+
+#==========================
+# Yearly trends
+#==========================
+
+yearly = (
+    filtered
+    .groupby("Year", as_index=False)
+    .agg(
+        Volume=("QUANTITY(MT)", "sum"),
+        Value=("VALUE CIF(BAHT)", "sum")
+    )
+)
+
+yearly["Avg Price"] = yearly["Value"] / yearly["Volume"]
+
+#==========================
+# Volume trends
+#==========================
+
+fig = px.line(
+    yearly,
+    x="Year",
+    y="Volume",
+    markers=True,
+    title="Import Volume by Year"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+#==========================
+# Value trends
+#==========================
+fig = px.line(
+    yearly,
+    x="Year",
+    y="Value",
+    markers=True,
+    title="Import Value by Year"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+#==========================
+# Average Price trends
+#==========================
+fig = px.line(
+    yearly,
+    x="Year",
+    y="Avg Price",
+    markers=True,
+    title="Average Import Price"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+
+#==========================
+# Top Formulas
+#==========================
+formula_df = (
+    filtered
+    .groupby("FORMULA", as_index=False)["QUANTITY(MT)"]
+    .sum()
+    .sort_values("QUANTITY(MT)", ascending=False)
+    .head(10)
+)
+
+fig = px.bar(
+    formula_df,
+    x="QUANTITY(MT)",
+    y="FORMULA",
+    orientation="h",
+    title="Top 10 Fertilizer Formulas"
+)
+
+fig.update_layout(yaxis=dict(categoryorder="total ascending"))
+
+st.plotly_chart(fig, use_container_width=True)
+
+#==========================
+# Top Importers
+#==========================
+company_df = (
+    filtered
+    .groupby("Importer", as_index=False)["QUANTITY(MT)"]
+    .sum()
+    .sort_values("QUANTITY(MT)", ascending=False)
+    .head(10)
+)
+
+fig = px.bar(
+    company_df,
+    x="QUANTITY(MT)",
+    y="Importer",
+    orientation="h",
+    title="Top 10 Importers"
+)
+
+fig.update_layout(yaxis=dict(categoryorder="total ascending"))
+
+st.plotly_chart(fig, use_container_width=True)
+
+
+#==========================
+# Top Origins
+#==========================
+
+origin_df = (
+    filtered
+    .groupby("ORIGIN", as_index=False)["QUANTITY(MT)"]
+    .sum()
+    .sort_values("QUANTITY(MT)", ascending=False)
+    .head(10)
+)
+
+fig = px.bar(
+    origin_df,
+    x="QUANTITY(MT)",
+    y="ORIGIN",
+    orientation="h",
+    title="Top Origin Countries"
+)
+
+fig.update_layout(yaxis=dict(categoryorder="total ascending"))
+
+st.plotly_chart(fig, use_container_width=True)
+
+#==========================
+# Type of Distirbution
+#==========================
+type_df = (
+    filtered["Type"]
+    .value_counts()
+    .reset_index()
+)
+
+type_df.columns = ["Type", "Count"]
+
+fig = px.pie(
+    type_df,
+    names="Type",
+    values="Count",
+    hole=0.5,
+    title="Fertilizer Type Distribution"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+
+#==========================
+# Monthly trends
+#==========================
+month_order = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+]
+
+filtered["Month"] = pd.Categorical(
+    filtered["Month"],
+    categories=month_order,
+    ordered=True
+)
+
+monthly = (
+    filtered
+    .groupby("Month", as_index=False)["QUANTITY(MT)"]
+    .sum()
+)
+
+fig = px.line(
+    monthly,
+    x="Month",
+    y="QUANTITY(MT)",
+    markers=True,
+    title="Monthly Import Volume"
+)
+
+st.plotly_chart(fig, use_container_width=True)
