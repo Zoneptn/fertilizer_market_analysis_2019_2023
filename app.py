@@ -349,8 +349,14 @@ fig = px.line(
     title="Monthly Import Volume"
 )
 
+fig.update_traces(
+    hovertemplate="Year: %{x}<br>Avg Price: %{y:,.2f} THB/MT<extra></extra>"
+)
+
+fig.update_yaxes(
+    tickformat=",.2f"
+)
+
 st.plotly_chart(fig, use_container_width=True)
 
 
-
-st.write(df["Month"].unique())
