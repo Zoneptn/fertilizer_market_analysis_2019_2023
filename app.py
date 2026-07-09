@@ -350,8 +350,9 @@ fig = px.line(
 )
 
 fig.update_traces(
-    hovertemplate="Year: %{x}<br>Avg Price: %{y:,.2f} THB/MT<extra></extra>"
+    hovertemplate="Year: %{x}<br>Import Volume: %{y:,.0f} MT<extra></extra>"
 )
+
 
 fig.update_yaxes(
     tickformat=",.2f"
