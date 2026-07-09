@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import calendar
 
 
 st.set_page_config(
@@ -318,34 +319,38 @@ st.plotly_chart(fig, use_container_width=True)
 #==========================
 # Monthly trends
 #==========================
+
+filtered["Month_Name"] = filtered["Month"].apply(
+    lambda x: calendar.month_abbr[int(x)]
+)
+
 month_order = [
-    "January","February","March","April","May","June",
-    "July","August","September","October","November","December"
+    "Jan","Feb","Mar","Apr","May","Jun",
+    "Jul","Aug","Sep","Oct","Nov","Dec"
 ]
 
-filtered["Month"] = pd.Categorical(
-    filtered["Month"],
+filtered["Month_Name"] = pd.Categorical(
+    filtered["Month_Name"],
     categories=month_order,
     ordered=True
 )
 
 monthly = (
     filtered
-    .groupby("Month", as_index=False)["QUANTITY(MT)"]
+    .groupby("Month_Name", as_index=False)["QUANTITY(MT)"]
     .sum()
 )
 
 fig = px.line(
     monthly,
-    x="Month",
+    x="Month_Name",
     y="QUANTITY(MT)",
     markers=True,
     title="Monthly Import Volume"
 )
-fig.update_traces(
-    hovertemplate="%{y:,.2f}<extra></extra>"
-)
 
 st.plotly_chart(fig, use_container_width=True)
+
+
 
 st.write(df["Month"].unique())
