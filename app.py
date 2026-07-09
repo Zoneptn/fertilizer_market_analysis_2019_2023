@@ -217,7 +217,7 @@ fig = px.bar(
 fig.update_layout(yaxis=dict(categoryorder="total ascending"))
 fig.update_yaxes(type="category")
 fig.update_traces(
-    hovertemplate="%{y:,.2f}<extra></extra>"
+    hovertemplate="Quantity: %{x:,.2f} MT<br>Formula: %{y}<extra></extra>"
 )
 
 st.plotly_chart(fig, use_container_width=True)
@@ -243,7 +243,7 @@ fig = px.bar(
 
 fig.update_layout(yaxis=dict(categoryorder="total ascending"))
 fig.update_traces(
-    hovertemplate="%{y:,.2f}<extra></extra>"
+    hovertemplate="Quantity: %{x:,.2f} MT<br>Importer: %{y}<extra></extra>"
 )
 
 st.plotly_chart(fig, use_container_width=True)
@@ -271,7 +271,7 @@ fig = px.bar(
 
 fig.update_layout(yaxis=dict(categoryorder="total ascending"))
 fig.update_traces(
-    hovertemplate="%{y:,.2f}<extra></extra>"
+    hovertemplate="Quantity: %{x:,.2f} MT<br>Origin: %{y}<extra></extra>"
 )
 
 st.plotly_chart(fig, use_container_width=True)
