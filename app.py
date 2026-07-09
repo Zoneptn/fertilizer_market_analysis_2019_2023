@@ -39,7 +39,7 @@ df_year = df[df["Year"].isin(year)]
 
 formula = st.sidebar.multiselect(
     "Formula",
-    sorted(df["FORMULA"].unique())
+    sorted(df_year["FORMULA"].unique())
 )
 df_formula = df_year.copy()
 
@@ -48,7 +48,7 @@ if formula:
 
 importer = st.sidebar.multiselect(
     "Importer",
-    sorted(df["Importer"].unique())
+    sorted(df_formula["Importer"].unique())
 )
 df_importer = df_formula.copy()
 
@@ -57,7 +57,7 @@ if importer:
 
 origin = st.sidebar.multiselect(
     "Origin",
-    sorted(df["Origin"].unique())
+    sorted(df_importer["Origin"].unique())
 )
 df_origin = df_importer.copy()
 
@@ -66,7 +66,7 @@ if origin:
 
 fert_type = st.sidebar.multiselect(
     "Type",
-    sorted(df["Type"].dropna().unique())
+    sorted(df_origin["Type"].dropna().unique())
 )
 filtered = df_origin.copy()
 
