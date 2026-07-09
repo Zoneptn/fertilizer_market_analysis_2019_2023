@@ -158,7 +158,9 @@ fig = px.line(
     markers=True,
     title="Import Volume by Year"
 )
-
+fig.update_traces(
+    hovertemplate="%{y:,.2f}<extra></extra>"
+)
 st.plotly_chart(fig, use_container_width=True)
 
 #==========================
@@ -171,7 +173,9 @@ fig = px.line(
     markers=True,
     title="Import Value by Year"
 )
-
+fig.update_traces(
+    hovertemplate="%{y:,.2f}<extra></extra>"
+)
 st.plotly_chart(fig, use_container_width=True)
 
 #==========================
@@ -183,6 +187,9 @@ fig = px.line(
     y="Avg Price",
     markers=True,
     title="Average Import Price"
+)
+fig.update_traces(
+    hovertemplate="%{y:,.2f}<extra></extra>"
 )
 
 st.plotly_chart(fig, use_container_width=True)
@@ -209,6 +216,9 @@ fig = px.bar(
 
 fig.update_layout(yaxis=dict(categoryorder="total ascending"))
 fig.update_yaxes(type="category")
+fig.update_traces(
+    hovertemplate="%{y:,.2f}<extra></extra>"
+)
 
 st.plotly_chart(fig, use_container_width=True)
 
@@ -232,6 +242,9 @@ fig = px.bar(
 )
 
 fig.update_layout(yaxis=dict(categoryorder="total ascending"))
+fig.update_traces(
+    hovertemplate="%{y:,.2f}<extra></extra>"
+)
 
 st.plotly_chart(fig, use_container_width=True)
 
@@ -257,6 +270,9 @@ fig = px.bar(
 )
 
 fig.update_layout(yaxis=dict(categoryorder="total ascending"))
+fig.update_traces(
+    hovertemplate="%{y:,.2f}<extra></extra>"
+)
 
 st.plotly_chart(fig, use_container_width=True)
 
@@ -309,5 +325,10 @@ fig = px.line(
     markers=True,
     title="Monthly Import Volume"
 )
+fig.update_traces(
+    hovertemplate="%{y:,.2f}<extra></extra>"
+)
 
 st.plotly_chart(fig, use_container_width=True)
+
+st.write(df["Month"].unique())
